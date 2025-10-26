@@ -1,0 +1,114 @@
+import { useState } from "react";
+import {
+  FlatList,
+  Pressable,
+  StyleSheet,
+  Text,
+  TextInput,
+  View,
+} from "react-native";
+import { SafeAreaView } from "react-native-safe-area-context";
+import Icon from "react-native-vector-icons/FontAwesome";
+import { data } from "../data/todos";
+
+export default function Index() {
+  const [getTodos, setTodos] = useState(data.sort((a, b) => b.id - a.id));
+  const [getText, setText] = useState("");
+
+  const addTodo = () => {
+    if (getText.trim()) {
+      const newId = getTodos.length > 0 ? getTodos[0].id + 1 : 1;
+      setTodos([{ id: newId, title: getText, complete: false }]);
+      setText("");
+    }
+  };
+
+  const toggleTodo = () => {
+    setTodos(
+      getTodos.map((todo) =>
+        todo.id === id ? { ...todo, completed: !todo.completed } : todo
+      )
+    );
+  };
+
+  const removeTodo = (id) => {
+    setTodos(getTodos.filter((todo) => todo.id != id));
+  };
+
+  return (
+    <SafeAreaView style={styles.container}>
+      <View style={styles.inputContainer}>
+        <TextInput
+          style={styles.textInput}
+          placeholder="Add a new todo"
+          placeholderTextColor="gray"
+          value={getText}
+          onChangeText={setText}
+        />
+        <Pressable style={styles.addButton} onPress={addTodo}>
+          <Text style={styles.text1}>Add</Text>
+        </Pressable>
+      </View>
+
+      <FlatList
+        data={data}
+        keyExtractor={(item) => item.id.toString()}
+        style={styles.flatList}
+        renderItem={({ item }) => (
+          <View style={styles.view2}>
+            <Text style={styles.text2}>{item.title}</Text>
+            <Icon name="trash" style={styles.icon} />
+          </View>
+        )}
+      />
+    </SafeAreaView>
+  );
+}
+
+const styles = StyleSheet.create({
+  container: {
+    flex: 1,
+    padding: 20,
+  },
+  inputContainer: {
+    flexDirection: "row",
+    marginBottom: 20,
+  },
+  textInput: {
+    flex: 1,
+    borderColor: "#ccc",
+    borderWidth: 1,
+    borderRadius: 8,
+    padding: 10,
+    marginRight: 10,
+  },
+  addButton: {
+    backgroundColor: "#4CAF50",
+    borderRadius: 8,
+    paddingHorizontal: 16,
+    justifyContent: "center",
+  },
+  text1: {
+    color: "#fff",
+    fontWeight: "bold",
+  },
+  flatList: {
+    flexGrow: 1,
+  },
+  view2: {
+    flexDirection: "row",
+    justifyContent: "space-between",
+    alignItems: "center",
+    backgroundColor: "#f2f2f2",
+    borderRadius: 8,
+    padding: 10,
+    marginBottom: 10,
+  },
+  text2: {
+    fontSize: 16,
+  },
+  icon: {
+    fontSize: 20,
+    color: "red",
+  },
+});
