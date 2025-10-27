@@ -1,4 +1,4 @@
-export const data = [
+export const todo = [
     {
         "id": 1,
         "title": "Work out",

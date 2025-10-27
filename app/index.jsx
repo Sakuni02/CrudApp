@@ -9,21 +9,21 @@ import {
 } from "react-native";
 import { SafeAreaView } from "react-native-safe-area-context";
 import Icon from "react-native-vector-icons/FontAwesome";
-import { data } from "../data/todos";
+import { todo } from "../data/todos";
 
 export default function Index() {
-  const [getTodos, setTodos] = useState(data.sort((a, b) => b.id - a.id));
+  const [getTodos, setTodos] = useState(todo.sort((a, b) => b.id - a.id));
   const [getText, setText] = useState("");
 
   const addTodo = () => {
     if (getText.trim()) {
       const newId = getTodos.length > 0 ? getTodos[0].id + 1 : 1;
-      setTodos([{ id: newId, title: getText, complete: false }]);
+      setTodos([{ id: newId, title: getText, complete: false }, ...getTodos]);
       setText("");
     }
   };
 
-  const toggleTodo = () => {
+  const toggleTodo = (id) => {
     setTodos(
       getTodos.map((todo) =>
         todo.id === id ? { ...todo, completed: !todo.completed } : todo
@@ -33,6 +33,22 @@ export default function Index() {
 
   const removeTodo = (id) => {
     setTodos(getTodos.filter((todo) => todo.id != id));
+  };
+
+  const renderItem = ({ item }) => {
+    return (
+      <View style={styles.todoItem}>
+        <Text
+          style={[styles.text2, item.completed && styles.completedText]}
+          onPress={() => toggleTodo(item.id)}
+        >
+          {item.title}
+        </Text>
+        <Pressable onPress={() => removeTodo(item.id)}>
+          <Icon name="trash" style={styles.icon} />
+        </Pressable>
+      </View>
+    );
   };
 
   return (
@@ -51,15 +67,10 @@ export default function Index() {
       </View>
 
       <FlatList
-        data={data}
+        data={getTodos}
         keyExtractor={(item) => item.id.toString()}
+        renderItem={renderItem}
         style={styles.flatList}
-        renderItem={({ item }) => (
-          <View style={styles.view2}>
-            <Text style={styles.text2}>{item.title}</Text>
-            <Icon name="trash" style={styles.icon} />
-          </View>
-        )}
       />
     </SafeAreaView>
   );
@@ -95,7 +106,7 @@ const styles = StyleSheet.create({
   flatList: {
     flexGrow: 1,
   },
-  view2: {
+  todoItem: {
     flexDirection: "row",
     justifyContent: "space-between",
     alignItems: "center",
@@ -110,5 +121,13 @@ const styles = StyleSheet.create({
   icon: {
     fontSize: 20,
     color: "red",
+    borderWidth: 1,
+    padding: 5,
+    borderRadius: 20,
+  },
+
+  completedText: {
+    textDecorationLine: "line-through",
+    color: "gray",
   },
 });
